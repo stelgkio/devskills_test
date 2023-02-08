@@ -34,6 +34,8 @@ namespace backend.Controllers
         {
             var query= new SSN(ssn);
             CreditData result = await Mediator.Send(query);
+            if(result.Address is null && result.FirstName is null && result.LastName is null) 
+                return NotFound();
             return Ok(result);
         }
     }
