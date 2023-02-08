@@ -2,6 +2,6 @@
 {
     public class AssessedIncome
     {
-        public int Income { get; set; }
+        public int assessed_income { get; set; }
     }
 }

@@ -41,9 +41,7 @@ namespace backend
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-            }
-
-            app.UseHealthChecks("/health");
+            }          
 
             app.UseSwagger(settings =>
             {

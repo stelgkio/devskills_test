@@ -2,7 +2,7 @@
 {
     public class Debt
     {
-        public int BalanceOfDebt { get; set; }
-        public bool Complaints { get; set; }
+        public int balance_of_debt { get; set; }
+        public bool complaints { get; set; }
     }
 }

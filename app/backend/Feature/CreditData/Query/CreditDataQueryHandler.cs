@@ -50,12 +50,12 @@ namespace backend.Feature
             var debt = await debtTask;
 
             return new CreditData(
-                personalDetails.FirtName,
-                personalDetails.LastName,
-                personalDetails.Address,
-                assessedIncome.Income,
-                debt.BalanceOfDebt,
-                debt.Complaints);
+                personalDetails.first_name,
+                personalDetails.last_name,
+                personalDetails.address,
+                assessedIncome.assessed_income,
+                debt.balance_of_debt,
+                debt.complaints);
         }
 
         public async Task<PrsonalDetails> GetPrsonalDetails(HttpClient _httpClien, string url ,string ssn)
