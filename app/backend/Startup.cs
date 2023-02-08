@@ -53,8 +53,7 @@ namespace backend
                 settings.DocumentTitle = "API Template description";
                 settings.RoutePrefix = "lookup";
                 settings.SwaggerEndpoint("/lookup/v1/openapi.json", "API description V1");
-            });
-            app.UseHttpsRedirection();
+            });           
             app.UseRouting();
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
             app.UseSerilogRequestLogging();

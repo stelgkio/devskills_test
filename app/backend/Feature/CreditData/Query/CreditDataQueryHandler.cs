@@ -3,6 +3,7 @@ using backend.Infastructure;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json;
@@ -38,41 +39,48 @@ namespace backend.Feature
 
         public async Task<CreditData> Handle(SSN request, CancellationToken cancellationToken)
         {
+            try { 
             string url = _configuration["DevSkillUri"];
-            var personalDetailsTask = GetPrsonalDetails(_httpClien, url, request.Ssn);
-            var assessedIncomeTask = GetAssessedIncome(_httpClien, url, request.Ssn);
-            var debtTask = GetDebt(_httpClien, url, request.Ssn);
+            var personalDetailsTask = GetPrsonalDetails(_httpClien, url, request.Ssn, cancellationToken);
+            var assessedIncomeTask = GetAssessedIncome(_httpClien, url, request.Ssn, cancellationToken);
+            var debtTask = GetDebt(_httpClien, url, request.Ssn, cancellationToken);
 
             await Task.WhenAll(personalDetailsTask, assessedIncomeTask, debtTask);
 
             var personalDetails = await personalDetailsTask;
             var assessedIncome = await assessedIncomeTask;
             var debt = await debtTask;
-
             return new CreditData(
-                personalDetails.first_name,
-                personalDetails.last_name,
-                personalDetails.address,
-                assessedIncome.assessed_income,
-                debt.balance_of_debt,
-                debt.complaints);
+                   personalDetails.first_name,
+                   personalDetails.last_name,
+                   personalDetails.address,
+                   assessedIncome.assessed_income,
+                   debt.balance_of_debt,
+                   debt.complaints);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Service Unavailble");
+                throw new HttpRequestException();
+            }
+           
         }
 
-        public async Task<PrsonalDetails> GetPrsonalDetails(HttpClient _httpClien, string url ,string ssn)
+        public async Task<PrsonalDetails> GetPrsonalDetails(HttpClient _httpClien, string url ,string ssn, CancellationToken cancellationToken)
         {
-            var personalDetailsResponse = await _httpClien.GetStringAsync(url + $"personal-details/{ssn}");
+            var personalDetailsResponse = await _httpClien.GetStringAsync(url + $"personal-details/{ssn}", cancellationToken);
             var result = JsonSerializer.Deserialize<PrsonalDetails>(personalDetailsResponse);
             return result;
         }
-        public async Task<Debt> GetDebt(HttpClient _httpClien, string url, string ssn)
+        public async Task<Debt> GetDebt(HttpClient _httpClien, string url, string ssn, CancellationToken cancellationToken)
         {
-            var personalDetailsResponse = await _httpClien.GetStringAsync(url + $"debt/{ssn}");
+            var personalDetailsResponse = await _httpClien.GetStringAsync(url + $"debt/{ssn}", cancellationToken);
             var result = JsonSerializer.Deserialize<Debt>(personalDetailsResponse);
             return result;
         }
-        public async Task<AssessedIncome> GetAssessedIncome(HttpClient _httpClien, string url, string ssn)
+        public async Task<AssessedIncome> GetAssessedIncome(HttpClient _httpClien, string url, string ssn, CancellationToken cancellationToken)
         {
-            var personalDetailsResponse = await _httpClien.GetStringAsync(url + $"assessed-income/{ssn}");
+            var personalDetailsResponse = await _httpClien.GetStringAsync(url + $"assessed-income/{ssn}", cancellationToken);
             var result = JsonSerializer.Deserialize<AssessedIncome>(personalDetailsResponse);
             return result;
         }
